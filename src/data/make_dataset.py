@@ -2,6 +2,7 @@
 # Format image cropped: age_gender_id.png, ex: 02_1_1.png
 
 # ````````````````````````````````````````````````````````````````````
+from ast import parse
 import os 
 import cv2
 from PIL import Image
@@ -10,10 +11,10 @@ import pandas as pd
 import insightface
 import numpy as np
 import mxnet as mx
-
+import argparse
 
 class Make_Dataset():
-    def __ini__(self, img_path, output_img_dir, image_size, is_align = False, margin = 0, threshold = 0.5):
+    def __ini__(self, img_path, output_path, image_size, is_align = False, margin = 0, threshold = 0.5):
         self.img_path = img_path
         self.image_size = image_size
 
@@ -22,7 +23,7 @@ class Make_Dataset():
         self.margin = margin
         self.threshold = threshold
         self.landmark = {}
-        self.output_img_dir = None
+        self.output_img_dir = output_path
         self.lst_img_paths = [os.path.join(img_path, i) for i in lst_img_names]
 
     def extract_face(self):
@@ -66,8 +67,8 @@ class Make_AAF_Dataset(Make_Dataset):
         pass
 
 class Make_UTK_Dataset(Make_Dataset):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super(Make_UTK_Dataset, self).__init__()
 
     def create_csv(self, save_path):
         num_row = len(os.listdir(self.output_img_dir))
@@ -156,13 +157,16 @@ def process_Wiki_dataset(continue_index, image_size = 128, is_align = False, mar
     print('[INFO] Finish processed')
 
 if __name__ == "__main__":
-    f_names = os.listdir('data/processed/Wiki')
-    lst = []
-    for f_n in f_names:
-        lst.append(int(f_n.split('.')[1].split('_')[-1]))
-    
-    # path2data_raw=os.path.join(os.getcwd() , 'data/raw/Wiki/wiki')
-    # result_df = pd.read_csv(os.path.join(path2data_raw, 'result.csv'))
+    ap = argparse.ArgumentParser()
 
-    # print(len(result_df))
-    process_Wiki_dataset(continue_index=max(lst) + 1, margin=5)
+    ap.add_argument('--img-size', required=True, help="Size of crop images")
+    ap.add_argument('--img-path', required=True, help="Path of input images")
+    ap.add_argument('--output-img', required=True, help="Path of csv file")
+    ap.add_argument('--output-path', required=True, help="Path of csv file")
+
+    opt = vars(ap.parse_args())        
+
+    utk = Make_UTK_Dataset(img_path = opt["img_path"], output_path = opt["output_img"], image_size = opt["img_size"])
+
+    utk.extract_face()
+    utk.create_csv(opt["output_path"])
