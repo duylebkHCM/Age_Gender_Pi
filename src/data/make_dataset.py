@@ -3,7 +3,6 @@
 
 # ````````````````````````````````````````````````````````````````````
 import os 
-# from facenet_pytorch import MTCNN
 import cv2
 from PIL import Image
 import scipy.io
@@ -13,16 +12,75 @@ import numpy as np
 import mxnet as mx
 
 
-
 class Make_Dataset():
-    def __ini__(self):
+    def __ini__(self, img_path, output_img_dir, image_size, is_align = False, margin = 0, threshold = 0.5):
+        self.img_path = img_path
+        self.image_size = image_size
+
+        lst_img_names = os.listdir(self.img_path)
+        self.is_align = is_align
+        self.margin = margin
+        self.threshold = threshold
+        self.landmark = {}
+        self.output_img_dir = None
+        self.lst_img_paths = [os.path.join(img_path, i) for i in lst_img_names]
+
+    def extract_face(self):
+        model = insightface.model_zoo.get_model('retinaface_r50_v1')
+        model.prepare(ctx_id = 0, nms=0.4)
+
+        for img_name in self.lst_img_paths:
+            img = cv2.imread(img_name)
+
+            bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
+
+            landmark_new = np.reshape(landmark, (-1, 10), order='F')
+            landmark_new = landmark_new.astype('int')
+
+            self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new
+
+            x1 = int(bbox[0][0]) - self.margin
+            y1 = int(bbox[0][1]) - self.margin
+            x2 = int(bbox[0][2]) + self.margin
+            y2 = int(bbox[0][3]) + self.margin
+            con = bbox[0][4]
+
+            crop_img = img[y1 : y2, x1 : x2]
+            crop_img = cv2.resize(crop_img, (self.image_size, self.image_size))
+
+            if self.is_align:
+                pass
+            
+            cv2.imwrite(os.path.join(self.output_img_dir, img_name.split('/')[-1]), crop_img)
+
+    def create_csv(self, save_path):
+        
         pass
 
 
-
 class Make_AAF_Dataset(Make_Dataset):
-    pass
+    def __init__(self):
+        super(Make_AAF_Dataset, self).__init__()
 
+    def create_csv(self, save_path):
+        pass
+
+class Make_UTK_Dataset(Make_Dataset):
+    def __init__(self):
+        super().__init__()
+
+    def create_csv(self, save_path):
+        num_row = len(os.listdir(self.output_img_dir))
+
+        columns = ['file_name','age', 'gender', 'land_mark']
+        img_names = os.listdir(self.output_img_dir)
+        output_df = pd.DataFrame(index = range(num_row), columns=columns)
+        for row in range(num_row):
+            output_df[row]['file_name'] = img_names[row]
+            output_df[row]['age'] = img_names[row].split('_')[0]
+            output_df[row]['gender'] = img_names[row].split('_')[1]
+            output_df[row]['land_mark'] = self.landmark[img_names[row].split('.')[0]]
+        output_df.to_csv(save_path)
 
 def process_Wiki_dataset(continue_index, image_size = 128, is_align = False, margin = 0, threshold = 0.5):
     path = os.getcwd() #/content/drive/My Drive/Colab Notebooks/Face_Application/Face-Application
