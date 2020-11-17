@@ -8,42 +8,91 @@ import cv2
 from PIL import Image
 import scipy.io
 import pandas as pd
+import imageio
 import insightface
+import pyprind
 import numpy as np
 import mxnet as mx
+from tqdm import tqdm
 import argparse
+from mlxtend.image import EyepadAlign
 
 class Make_Dataset(object):
-    def __init__(self, img_path, output_path, image_size, device, is_align = False, margin = 0, threshold = 0.5):
+    def __init__(self, img_path, output_img, image_size, device, is_align = False, margin = 0, threshold = 0.5):
         self.img_path = img_path
         self.image_size = int(image_size)
-
-        lst_img_names = os.listdir(self.img_path)
         self.is_align = is_align
         self.margin = margin
         self.threshold = threshold
+        self.bboxes = {}
         self.landmark = {}
-        self.output_img_dir = output_path
         self.device = device
+        self.output_img_dir = output_img
+
+        if not os.path.isdir(os.path.join(output_img, 'aligned')):
+            path = os.path.join(output_img, 'aligned')
+            os.makedirs(path, exist_ok=True)
+            self.aligned_dir = path
+        if not os.path.isdir(os.path.join(output_img, 'aligned_cropped')):
+            path = os.path.join(output_img, 'aligned_cropped')
+            os.makedirs(path, exist_ok=True)
+            self.cropped_dir = path 
+
+        lst_img_names = os.listdir(self.aligned_dir)
         self.lst_img_paths = [os.path.join(img_path, i) for i in lst_img_names]
 
+    def _face_align(self, target_size = 128):
+        # Get average image
+        eyepad = EyepadAlign(verbose=1)
+        eyepad.fit_directory(target_img_dir=self.img_path,
+                            target_width=self.target_size,
+                            target_height=self.target_size,
+                            file_extension='.jpg')  # note the capital letters
+
+        # Center nose of the average image
+        nose_coord = eyepad.target_landmarks_[33].copy()
+        disp_vec = np.array([self.target_size//2, self.target_size//2]) - nose_coord
+        translated_shape = eyepad.target_landmarks_ + disp_vec
+
+        eyepad_centnoise = EyepadAlign(verbose=1)
+        eyepad_centnoise.fit_values(target_landmarks=translated_shape,
+                                    target_width=self.target_size,
+                                    target_height=self.target_size)
+
+        # Align images to centered average image
+        flist = [f for f in os.listdir(self.img_path) if f.endswith('.jpg')]
+        pbar = pyprind.ProgBar(len(flist), title='Aligning images ...')
+
+        for f in flist:
+            pbar.update()
+            img = imageio.imread(os.path.join(self.img_path, f))
+
+            img_tr = eyepad.transform(img)
+            if img_tr is not None:
+                imageio.imsave(os.path.join(self.aligned_dir, f), img_tr)
+
     def extract_face(self):
+        #Aligng first
+        self._face_align()
+
         model = insightface.model_zoo.get_model('retinaface_r50_v1')
         model.prepare(ctx_id = int(self.device), nms=0.4)
 
         print('[INFO] Start extract face...')
-        for img_name in self.lst_img_paths:
+        for idx in tqdm(range(len(self.lst_img_paths)), desc='Progress'):
+            img_name = self.lst_img_paths[idx]
             img = cv2.imread(img_name)
-            print('[INFO] img name', img_name)
-            print('[INFO] img shape', img.shape)
+            img = cv2.resize(img, (512, 512))
+            # print('[INFO] img name', img_name)
+            # print('[INFO] img shape', img.shape)
 
             try:
                 bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
 
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
-
-                self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new
+                self.bboxes[img_name.split('/')[-1].split('.')[0]] = bbox
+                self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new[0]
 
                 x1 = int(bbox[0][0]) - self.margin
                 y1 = int(bbox[0][1]) - self.margin
@@ -53,9 +102,8 @@ class Make_Dataset(object):
 
                 crop_img = img[y1 : y2, x1 : x2]
                 crop_img = cv2.resize(crop_img, (self.image_size, self.image_size))
-                if self.is_align:
-                    pass
-                cv2.imwrite(os.path.join(self.output_img_dir, img_name.split('/')[-1]), crop_img)
+                   
+                cv2.imwrite(os.path.join(self.cropped_dir, img_name.split('/')[-1]), crop_img)
             except:
                 continue
     
@@ -66,41 +114,40 @@ class Make_Dataset(object):
 
 
 class Make_AAF_Dataset(Make_Dataset):
-    # def __init__(self):
-    #     super(Make_AAF_Dataset, self).__init__()
-
     def create_csv(self, save_path):
         pass
 
 class Make_UTK_Dataset(Make_Dataset):
-    # def __init__(self):
-    #     super(Make_UTK_Dataset, self).__init__()
-
     def create_csv(self, save_path):
-        num_row = len(os.listdir(self.output_img_dir))
+        num_row = len(os.listdir(self.cropped_dir))
 
-        columns = ['file_name','age', 'gender', 'land_mark']
-        img_names = os.listdir(self.output_img_dir)
+        columns = ['file_name','age', 'gender', 'x_min', 'y_min', 'x_max', 'y_max', 'land_mark', 'confidence']
+        img_names = os.listdir(self.cropped_dir)
         output_df = pd.DataFrame(index = range(num_row), columns=columns)
         for row in range(num_row):
             output_df[row]['file_name'] = img_names[row]
-            output_df[row]['age'] = img_names[row].split('_')[0]
-            output_df[row]['gender'] = img_names[row].split('_')[1]
-            output_df[row]['land_mark'] = self.landmark[img_names[row].split('.')[0]]
-        output_df.to_csv(save_path)
+            output_df[row]['age'] = int(img_names[row].split('_')[0])
+            output_df[row]['gender'] = int(img_names[row].split('_')[1])
+            output_df[row]['x_min'] = float(self.bboxes[img_names[row].split('.')[0]][0])
+            output_df[row]['y_min'] = float(self.bboxes[img_names[row].split('.')[0]][1])
+            output_df[row]['x_max'] = float(self.bboxes[img_names[row].split('.')[0]][2])
+            output_df[row]['y_max'] = float(self.bboxes[img_names[row].split('.')[0]][3])
+            output_df[row]['land_mark'] = str('[') + ','.join([str(i) for i in self.landmark[img_names[row].split('.')[0]]]) + str(']')
+            output_df[row]['confidence'] = float(self.bboxes[img_names[row].split('.')[0]][4])
+        output_df.to_csv(save_path, index=False, header=True)
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
 
     ap.add_argument('--img-size', required=True, help="Size of crop images")
     ap.add_argument('--img-path', required=True, help="Path of input images")
-    ap.add_argument('--output-img', required=True, help="Path of csv file")
-    ap.add_argument('--output-path', required=True, help="Path of csv file")
+    ap.add_argument('--output-img', required=True, help="Path of output img file")
+    ap.add_argument('--output-csv', required=True, help="Path of csv file")
     ap.add_argument('--device', default='', help='Choose device to use')
 
     opt = vars(ap.parse_args())        
 
-    utk = Make_UTK_Dataset(img_path = opt["img_path"], device = opt["device"], output_path = opt["output_img"], image_size = opt["img_size"])
+    utk = Make_UTK_Dataset(img_path = opt["img_path"], device = opt["device"], output_img = opt["output_img"], image_size = opt["img_size"])
 
     utk.extract_face()
-    utk.create_csv(opt["output_path"])  
+    utk.create_csv(opt["output_csv"])  
