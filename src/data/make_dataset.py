@@ -16,7 +16,7 @@ import argparse
 class Make_Dataset(object):
     def __init__(self, img_path, output_path, image_size, device, is_align = False, margin = 0, threshold = 0.5):
         self.img_path = img_path
-        self.image_size = image_size
+        self.image_size = int(image_size)
 
         lst_img_names = os.listdir(self.img_path)
         self.is_align = is_align
