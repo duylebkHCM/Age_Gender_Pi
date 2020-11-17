@@ -106,8 +106,8 @@ class Make_Dataset(object):
 
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
-                self.bboxes[img_name.split('/')[-1].split('.')[0]] = bbox[choose_idx] / 512.0
-                self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new[choose_idx] / 512.0
+                self.bboxes[img_name.split('/')[-1].split('.')[0]] = bbox[choose_idx][:-1] / 512.0
+                self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new[choose_idx][:-1] / 512.0
 
                 x1 = int(bbox[choose_idx][0]) - self.margin 
                 y1 = int(bbox[choose_idx][1]) - self.margin 
@@ -128,7 +128,12 @@ class Make_Dataset(object):
 
 
 class Make_AAF_Dataset(Make_Dataset):
+    def __init__(self, type = 'train') -> None:
+        self.type = type
+        super(Make_AAF_Dataset, self).__init__()
+
     def create_csv(self, save_path):
+        
         pass
 
 class Make_UTK_Dataset(Make_Dataset):
