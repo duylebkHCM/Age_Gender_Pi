@@ -141,8 +141,8 @@ class Make_UTK_Dataset(Make_Dataset):
         print('[INFO] Start create csv...')
         for row in tqdm(range(num_row), desc='Progress'):
             output_df['file_name'][row] = img_names[row]
-            output_df['age'][row] = int(img_names[row].split('_')[0])
-            output_df['gender'][row] = int(img_names[row].split('_')[1])
+            output_df['age'][row] = int(img_names[row].split('_')[0]) if len(img_names[row].split('_')[1]) else np.inf
+            output_df['gender'][row] = int(img_names[row].split('_')[1]) if len(img_names[row].split('_')[1]) else np.inf
             output_df['x_min'][row] = float(self.bboxes[img_names[row].split('.')[0]][0])
             output_df['y_min'][row] = float(self.bboxes[img_names[row].split('.')[0]][1])
             output_df['x_max'][row] = float(self.bboxes[img_names[row].split('.')[0]][2])
