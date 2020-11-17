@@ -34,6 +34,8 @@ class Make_Dataset(object):
         print('[INFO] Start extract face...')
         for img_name in self.lst_img_paths:
             img = cv2.imread(img_name)
+            print('[INFO] img name', img_name)
+            print('[INFO] img shape', img.shape)
 
             bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
 
