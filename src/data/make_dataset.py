@@ -37,26 +37,28 @@ class Make_Dataset(object):
             print('[INFO] img name', img_name)
             print('[INFO] img shape', img.shape)
 
-            bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
+            try:
+                bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
 
-            landmark_new = np.reshape(landmark, (-1, 10), order='F')
-            landmark_new = landmark_new.astype('int')
+                landmark_new = np.reshape(landmark, (-1, 10), order='F')
+                landmark_new = landmark_new.astype('int')
 
-            self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new
+                self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new
 
-            x1 = int(bbox[0][0]) - self.margin
-            y1 = int(bbox[0][1]) - self.margin
-            x2 = int(bbox[0][2]) + self.margin
-            y2 = int(bbox[0][3]) + self.margin
-            con = bbox[0][4]
+                x1 = int(bbox[0][0]) - self.margin
+                y1 = int(bbox[0][1]) - self.margin
+                x2 = int(bbox[0][2]) + self.margin
+                y2 = int(bbox[0][3]) + self.margin
+                con = bbox[0][4]
 
-            crop_img = img[y1 : y2, x1 : x2]
-            crop_img = cv2.resize(crop_img, (self.image_size, self.image_size))
-
-            if self.is_align:
-                pass
-            
-            cv2.imwrite(os.path.join(self.output_img_dir, img_name.split('/')[-1]), crop_img)
+                crop_img = img[y1 : y2, x1 : x2]
+                crop_img = cv2.resize(crop_img, (self.image_size, self.image_size))
+                if self.is_align:
+                    pass
+                cv2.imwrite(os.path.join(self.output_img_dir, img_name.split('/')[-1]), crop_img)
+            except:
+                continue
+    
         print('[INFO] Finish extract face...')
 
     def create_csv(self, save_path):
