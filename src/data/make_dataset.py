@@ -136,15 +136,15 @@ class Make_UTK_Dataset(Make_Dataset):
         img_names = os.listdir(self.cropped_dir)
         output_df = pd.DataFrame(index = range(num_row), columns=columns)
         for row in range(num_row):
-            output_df[row]['file_name'] = img_names[row]
-            output_df[row]['age'] = int(img_names[row].split('_')[0])
-            output_df[row]['gender'] = int(img_names[row].split('_')[1])
-            output_df[row]['x_min'] = float(self.bboxes[img_names[row].split('.')[0]][0])
-            output_df[row]['y_min'] = float(self.bboxes[img_names[row].split('.')[0]][1])
-            output_df[row]['x_max'] = float(self.bboxes[img_names[row].split('.')[0]][2])
-            output_df[row]['y_max'] = float(self.bboxes[img_names[row].split('.')[0]][3])
-            output_df[row]['land_mark'] = str('[') + ','.join([str(i) for i in self.landmark[img_names[row].split('.')[0]]]) + str(']')
-            output_df[row]['confidence'] = float(self.bboxes[img_names[row].split('.')[0]][4])
+            output_df['file_name'][row] = img_names[row]
+            output_df['age'][row] = int(img_names[row].split('_')[0])
+            output_df['gender'][row] = int(img_names[row].split('_')[1])
+            output_df['x_min'][row] = float(self.bboxes[img_names[row].split('.')[0]][0])
+            output_df['y_min'][row] = float(self.bboxes[img_names[row].split('.')[0]][1])
+            output_df['x_max'][row] = float(self.bboxes[img_names[row].split('.')[0]][2])
+            output_df['y_max'][row] = float(self.bboxes[img_names[row].split('.')[0]][3])
+            output_df['land_mark'][row] = str('[') + ','.join([str(i) for i in self.landmark[img_names[row].split('.')[0]]]) + str(']')
+            output_df['confidence'][row] = float(self.bboxes[img_names[row].split('.')[0]][4])
         output_df.to_csv(save_path, index=False, header=True)
 
 if __name__ == "__main__":
@@ -160,5 +160,5 @@ if __name__ == "__main__":
 
     utk = Make_UTK_Dataset(img_path = opt["img_path"], device = opt["device"], output_img = opt["output_img"], is_align=opt["align"], image_size = opt["img_size"])
 
-    utk.extract_face()
+    # utk.extract_face()
     utk.create_csv(opt["output_csv"])  
