@@ -41,7 +41,7 @@ class Make_Dataset(object):
         lst_img_names = os.listdir(self.aligned_dir)
         self.lst_img_paths = [os.path.join(img_path, i) for i in lst_img_names]
 
-    def _face_align(self, target_size = 128):
+    def _face_align(self, target_size = 512):
         # Get average image
         eyepad = EyepadAlign(verbose=1)
         eyepad.fit_directory(target_img_dir=self.img_path,
