@@ -3,7 +3,9 @@
 
 # ````````````````````````````````````````````````````````````````````
 from ast import parse
-import os 
+import os
+
+from numpy.core.fromnumeric import choose 
 import cv2
 from PIL import Image
 import scipy.io
@@ -92,21 +94,25 @@ class Make_Dataset(object):
         print('[INFO] Start extract face...')
         for idx in tqdm(range(len(self.lst_img_paths)), desc='Progress'):
             img_name = self.lst_img_paths[idx]
-            img = cv2.imread(img_name)
-            img = cv2.resize(img, (512, 512))
             try:
+                img = cv2.imread(img_name)
+                img = cv2.resize(img, (512, 512)) #Resize all images to the same size (512, 512, 3)
                 bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
+
+                #Get bbox and landmark of face which has the biggest area
+                area = float((bbox[:, 2] - bbox[:, 0])*(bbox[:, 3] - bbox[:, 1]))
+                choose_idx = np.argmax(area, axis=-1)
+                choose_idx = int(choose_idx)
 
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
-                self.bboxes[img_name.split('/')[-1].split('.')[0]] = bbox[0]
-                self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new[0]
+                self.bboxes[img_name.split('/')[-1].split('.')[0]] = bbox[choose_idx] / 512.0
+                self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new[choose_idx] / 512.0
 
-                x1 = int(bbox[0][0]) - self.margin
-                y1 = int(bbox[0][1]) - self.margin
-                x2 = int(bbox[0][2]) + self.margin
-                y2 = int(bbox[0][3]) + self.margin
-                con = bbox[0][4]
+                x1 = int(bbox[choose_idx][0]) - self.margin 
+                y1 = int(bbox[choose_idx][1]) - self.margin 
+                x2 = int(bbox[choose_idx][2]) + self.margin 
+                y2 = int(bbox[choose_idx][3]) + self.margin
 
                 crop_img = img[y1 : y2, x1 : x2]
                 crop_img = cv2.resize(crop_img, (self.image_size, self.image_size))
@@ -153,11 +159,13 @@ if __name__ == "__main__":
     ap.add_argument('--img-path', required=True, help="Path of input images")
     ap.add_argument('--output-img', required=True, help="Path of output img file")
     ap.add_argument('--output-csv', required=True, help="Path of csv file")
-    ap.add_argument('--device', default='', help='Choose device to use')
-    ap.add_argument('--align', default=False, help='Align image or not')
+    ap.add_argument('--device', default='', help='Choose device to use (ie cpu or gpu 0,1,2,3)')
+    ap.add_argument('--align', default=False, help='Align images or not')
+    ap.add_argument('--threshold', default=0.5, help='Threshold used to detect face')
+
     opt = vars(ap.parse_args())        
 
-    utk = Make_UTK_Dataset(img_path = opt["img_path"], device = opt["device"], output_img = opt["output_img"], is_align=opt["align"], image_size = opt["img_size"])
+    utk = Make_UTK_Dataset(img_path = opt["img_path"], device = opt["device"], output_img = opt["output_img"], is_align=opt["align"], image_size = opt["img_size"], threshold=opt['threshold'])
 
     utk.extract_face()
     utk.create_csv(opt["output_csv"])   
