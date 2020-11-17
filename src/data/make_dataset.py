@@ -45,19 +45,19 @@ class Make_Dataset(object):
         # Get average image
         eyepad = EyepadAlign(verbose=1)
         eyepad.fit_directory(target_img_dir=self.img_path,
-                            target_width=self.target_size,
-                            target_height=self.target_size,
+                            target_width=target_size,
+                            target_height=target_size,
                             file_extension='.jpg')  # note the capital letters
 
         # Center nose of the average image
         nose_coord = eyepad.target_landmarks_[33].copy()
-        disp_vec = np.array([self.target_size//2, self.target_size//2]) - nose_coord
+        disp_vec = np.array([target_size//2, target_size//2]) - nose_coord
         translated_shape = eyepad.target_landmarks_ + disp_vec
 
         eyepad_centnoise = EyepadAlign(verbose=1)
         eyepad_centnoise.fit_values(target_landmarks=translated_shape,
-                                    target_width=self.target_size,
-                                    target_height=self.target_size)
+                                    target_width=target_size,
+                                    target_height=target_size)
 
         # Align images to centered average image
         flist = [f for f in os.listdir(self.img_path) if f.endswith('.jpg')]
