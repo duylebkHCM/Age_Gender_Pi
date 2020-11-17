@@ -94,15 +94,12 @@ class Make_Dataset(object):
             img_name = self.lst_img_paths[idx]
             img = cv2.imread(img_name)
             img = cv2.resize(img, (512, 512))
-            # print('[INFO] img name', img_name)
-            # print('[INFO] img shape', img.shape)
-
             try:
                 bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
 
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
-                self.bboxes[img_name.split('/')[-1].split('.')[0]] = bbox
+                self.bboxes[img_name.split('/')[-1].split('.')[0]] = bbox[0]
                 self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new[0]
 
                 x1 = int(bbox[0][0]) - self.margin
@@ -148,7 +145,7 @@ class Make_UTK_Dataset(Make_Dataset):
             output_df['confidence'][row] = float(self.bboxes[img_names[row].split('.')[0]][4])
         output_df.to_csv(os.path.join(save_path,'utk_face.csv'), index=False, header=True)
         print('[INFO] Finish create csv...')
-        
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
 
