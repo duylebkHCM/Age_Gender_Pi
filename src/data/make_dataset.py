@@ -13,7 +13,7 @@ import numpy as np
 import mxnet as mx
 import argparse
 
-class Make_Dataset():
+class Make_Dataset(object):
     def __init__(self, img_path, output_path, image_size, device, is_align = False, margin = 0, threshold = 0.5):
         self.img_path = img_path
         self.image_size = image_size
@@ -58,20 +58,19 @@ class Make_Dataset():
         print('[INFO] Finish extract face...')
 
     def create_csv(self, save_path):
-        
         pass
 
 
 class Make_AAF_Dataset(Make_Dataset):
-    def __init__(self):
-        super(Make_AAF_Dataset, self).__init__()
+    # def __init__(self):
+    #     super(Make_AAF_Dataset, self).__init__()
 
     def create_csv(self, save_path):
         pass
 
 class Make_UTK_Dataset(Make_Dataset):
-    def __init__(self):
-        super(Make_UTK_Dataset, self).__init__()
+    # def __init__(self):
+    #     super(Make_UTK_Dataset, self).__init__()
 
     def create_csv(self, save_path):
         num_row = len(os.listdir(self.output_img_dir))
