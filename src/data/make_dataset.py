@@ -28,16 +28,22 @@ class Make_Dataset(object):
         self.landmark = {}
         self.device = device
         self.output_img_dir = output_img
+        self.aligned_dir = None
+        self.cropped_dir = None
 
         if not os.path.isdir(os.path.join(output_img, 'aligned')):
             path = os.path.join(output_img, 'aligned')
             os.makedirs(path, exist_ok=True)
             self.aligned_dir = path
+        else:
+            self.aligned_dir = os.path.join(output_img, 'aligned')
         if not os.path.isdir(os.path.join(output_img, 'aligned_cropped')):
             path = os.path.join(output_img, 'aligned_cropped')
             os.makedirs(path, exist_ok=True)
             self.cropped_dir = path 
-
+        else:
+            self.cropped_dir = os.path.join(output_img, 'aligned_cropped')
+            
         lst_img_names = os.listdir(self.aligned_dir)
         self.lst_img_paths = [os.path.join(img_path, i) for i in lst_img_names]
 
