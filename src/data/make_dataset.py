@@ -14,7 +14,7 @@ import mxnet as mx
 import argparse
 
 class Make_Dataset():
-    def __ini__(self, img_path, output_path, image_size, is_align = False, margin = 0, threshold = 0.5):
+    def __ini__(self, img_path, output_path, image_size, device, is_align = False, margin = 0, threshold = 0.5):
         self.img_path = img_path
         self.image_size = image_size
 
@@ -24,11 +24,12 @@ class Make_Dataset():
         self.threshold = threshold
         self.landmark = {}
         self.output_img_dir = output_path
+        self.device = device
         self.lst_img_paths = [os.path.join(img_path, i) for i in lst_img_names]
 
     def extract_face(self):
         model = insightface.model_zoo.get_model('retinaface_r50_v1')
-        model.prepare(ctx_id = 0, nms=0.4)
+        model.prepare(ctx_id = int(self.device), nms=0.4)
 
         for img_name in self.lst_img_paths:
             img = cv2.imread(img_name)
@@ -163,10 +164,11 @@ if __name__ == "__main__":
     ap.add_argument('--img-path', required=True, help="Path of input images")
     ap.add_argument('--output-img', required=True, help="Path of csv file")
     ap.add_argument('--output-path', required=True, help="Path of csv file")
+    ap.add_argument('--device', default='', help='Choose device to use')
 
     opt = vars(ap.parse_args())        
 
     utk = Make_UTK_Dataset(img_path = opt["img_path"], output_path = opt["output_img"], image_size = opt["img_size"])
 
     utk.extract_face()
-    utk.create_csv(opt["output_path"])
+    utk.create_csv(opt["output_path"])  
