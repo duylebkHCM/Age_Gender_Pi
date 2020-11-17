@@ -135,7 +135,8 @@ class Make_UTK_Dataset(Make_Dataset):
         columns = ['file_name','age', 'gender', 'x_min', 'y_min', 'x_max', 'y_max', 'land_mark', 'confidence']
         img_names = os.listdir(self.cropped_dir)
         output_df = pd.DataFrame(index = range(num_row), columns=columns)
-        for row in range(num_row):
+        print('[INFO] Start create csv...')
+        for row in tqdm(range(num_row), desc='Progress'):
             output_df['file_name'][row] = img_names[row]
             output_df['age'][row] = int(img_names[row].split('_')[0])
             output_df['gender'][row] = int(img_names[row].split('_')[1])
@@ -146,7 +147,8 @@ class Make_UTK_Dataset(Make_Dataset):
             output_df['land_mark'][row] = str('[') + ','.join([str(i) for i in self.landmark[img_names[row].split('.')[0]]]) + str(']')
             output_df['confidence'][row] = float(self.bboxes[img_names[row].split('.')[0]][4])
         output_df.to_csv(os.path.join(save_path,'utk_face.csv'), index=False, header=True)
-
+        print('[INFO] Finish create csv...')
+        
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
 
