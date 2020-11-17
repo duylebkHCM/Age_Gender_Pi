@@ -69,7 +69,7 @@ class Make_AAF_Dataset(Make_Dataset):
 
 class Make_UTK_Dataset(Make_Dataset):
     def __init__(self, **kwargs):
-        super(Make_UTK_Dataset, self).__init__()
+        super(Make_UTK_Dataset, self).__init__(**kwargs)
 
     def create_csv(self, save_path):
         num_row = len(os.listdir(self.output_img_dir))
