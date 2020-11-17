@@ -37,14 +37,18 @@ class Make_Dataset(object):
             self.aligned_dir = path
         else:
             self.aligned_dir = os.path.join(output_img, 'aligned')
-        if not os.path.isdir(os.path.join(output_img, 'aligned_cropped')):
-            path = os.path.join(output_img, 'aligned_cropped')
+        if not os.path.isdir(os.path.join(output_img, 'cropped')):
+            path = os.path.join(output_img, 'cropped')
             os.makedirs(path, exist_ok=True)
             self.cropped_dir = path 
         else:
-            self.cropped_dir = os.path.join(output_img, 'aligned_cropped')
-            
-        lst_img_names = os.listdir(self.aligned_dir)
+            self.cropped_dir = os.path.join(output_img, 'cropped')
+
+        if self.is_align:
+            lst_img_names = os.listdir(self.aligned_dir)
+        else:
+            lst_img_names = os.listdir(self.img_path)
+
         self.lst_img_paths = [os.path.join(img_path, i) for i in lst_img_names]
 
     def _face_align(self, target_size = 512):
@@ -79,7 +83,8 @@ class Make_Dataset(object):
 
     def extract_face(self):
         #Aligng first
-        self._face_align()
+        if self.is_align:
+            self._face_align()
 
         model = insightface.model_zoo.get_model('retinaface_r50_v1')
         model.prepare(ctx_id = int(self.device), nms=0.4)
