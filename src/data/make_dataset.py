@@ -158,7 +158,7 @@ if __name__ == "__main__":
     ap.add_argument('--align', default=False, help='Align image or not')
     opt = vars(ap.parse_args())        
 
-    utk = Make_UTK_Dataset(img_path = opt["img_path"], device = opt["device"], output_img = opt["output_img"], image_size = opt["img_size"])
+    utk = Make_UTK_Dataset(img_path = opt["img_path"], device = opt["device"], output_img = opt["output_img"], is_align=opt["align"], image_size = opt["img_size"])
 
     utk.extract_face()
     utk.create_csv(opt["output_csv"])  
