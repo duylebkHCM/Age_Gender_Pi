@@ -1,8 +1,8 @@
 #!/bin/bash
-#!/bin/bash
-rawdatadir=../../data/UTK_Face/raw/
-interdatadir=../../data/UTK_Face/interim/
+rawdatadir=../../Data/All_Age_Faces/raw/
+interdatadir=../../Data/All_Age_Faces/interim/
+processeddir = ../../Data/All_Age_Faces/processed/
+
 mkdir -p $interdatadir
-cd $rawdatadir
-for f in *.tar.gz; do tar -xvf "$f"; done
+mkdir -p $processeddir
 
