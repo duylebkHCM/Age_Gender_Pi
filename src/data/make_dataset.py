@@ -4,8 +4,6 @@
 # ````````````````````````````````````````````````````````````````````
 from ast import parse
 import os
-#115.78.234.111
-from numpy.core.fromnumeric import choose 
 import cv2
 from PIL import Image
 import scipy.io
@@ -128,13 +126,45 @@ class Make_Dataset(object):
 
 
 class Make_AAF_Dataset(Make_Dataset):
-    def __init__(self, type = 'train', label = 'image sets') -> None:
-        self.type = type
+    def __init__(self, label_path = '/home/Data/All_Age_Faces/raw/All-Age-Faces Dataset/image sets') -> None:
+        self.label = label_path
         super(Make_AAF_Dataset, self).__init__()
 
     def create_csv(self, save_path):
+        img_names = os.listdir(self.cropped_dir)
         
-        pass
+        output_dict = {}
+
+        for type in ['train', 'val']:
+            with open(os.path.join(self.label_path, type + '.txt'), 'r') as txt:
+                lines = txt.readlines()
+                for line in lines:
+                    file_name = line.split(' ')[0]
+                    gender = line.split(' ')[1]
+                    if file_name in img_names:
+                        if 'file_name' not in output_dict:
+                            output_dict['file_name'] = [file_name]
+                            output_dict['age'] = int(file_name[file_name.rfind("A") + 1 : ]) if file_name[file_name.rfind("A") + 1 : ] else -1
+                            output_dict['gender'] = int(gender)
+                            output_dict['x_min'] = float(self.bboxes[file_name][0])
+                            output_dict['y_min'] = float(self.bboxes[file_name][1])
+                            output_dict['x_max'] = float(self.bboxes[file_name][2])
+                            output_dict['y_max'] = float(self.bboxes[file_name][3])
+                            output_dict['land_mark'] = str('[') + ','.join([str(i) for i in self.landmark[file_name]]) + str(']')
+                            output_dict['confidence'] = float(self.bboxes[file_name][4])
+                        else:
+                            output_dict['file_name'].append(file_name)
+                            output_dict['age'].append(int(file_name[file_name.rfind("A") + 1 : ]) if file_name[file_name.rfind("A") + 1 : ] else -1)
+                            output_dict['gender'].append(int(gender))
+                            output_dict['x_min'].append(float(self.bboxes[file_name][0]))
+                            output_dict['y_min'].append(float(self.bboxes[file_name][1]))
+                            output_dict['x_max'].append(float(self.bboxes[file_name][2]))
+                            output_dict['y_max'].append(float(self.bboxes[file_name][3]))
+                            output_dict['land_mark'].append(str('[') + ','.join([str(i) for i in self.landmark[file_name]]) + str(']'))
+                            output_dict['confidence'].append(float(self.bboxes[file_name][4]))
+            
+            df = pd.DataFrame(output_dict)
+            df.to_csv(os.path.join(save_path, type + '.csv'), index=False, header=True)
 
 class Make_UTK_Dataset(Make_Dataset):
     def create_csv(self, save_path):
@@ -146,8 +176,8 @@ class Make_UTK_Dataset(Make_Dataset):
         print('[INFO] Start create csv...')
         for row in tqdm(range(num_row), desc='Progress'):
             output_df['file_name'][row] = img_names[row]
-            output_df['age'][row] = int(img_names[row].split('_')[0]) if len(img_names[row].split('_')[1]) else np.inf
-            output_df['gender'][row] = int(img_names[row].split('_')[1]) if len(img_names[row].split('_')[1]) else np.inf
+            output_df['age'][row] = int(img_names[row].split('_')[0]) if len(img_names[row].split('_')[0]) else -1
+            output_df['gender'][row] = int(img_names[row].split('_')[1]) if len(img_names[row].split('_')[1]) else 2
             output_df['x_min'][row] = float(self.bboxes[img_names[row].split('.')[0]][0])
             output_df['y_min'][row] = float(self.bboxes[img_names[row].split('.')[0]][1])
             output_df['x_max'][row] = float(self.bboxes[img_names[row].split('.')[0]][2])
@@ -170,7 +200,7 @@ if __name__ == "__main__":
 
     opt = vars(ap.parse_args())        
 
-    utk = Make_UTK_Dataset(img_path = opt["img_path"], device = opt["device"], output_img = opt["output_img"], is_align=opt["align"], image_size = opt["img_size"], threshold=opt['threshold'])
+    aaf = Make_UTK_Dataset(img_path = opt["img_path"], device = opt["device"], output_img = opt["output_img"], is_align=opt["align"], image_size = opt["img_size"], threshold=opt['threshold'])
 
-    utk.extract_face()
-    utk.create_csv(opt["output_csv"])   
+    aaf.extract_face()
+    aaf.create_csv(opt["output_csv"])   
