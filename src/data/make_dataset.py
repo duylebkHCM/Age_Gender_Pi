@@ -90,7 +90,7 @@ class Make_Dataset(object):
         model.prepare(ctx_id = int(self.device), nms=0.4)
 
         print('[INFO] Start extract face...')
-        for idx in tqdm(range(len(self.lst_img_paths)[:2]), desc='Progress'):
+        for idx in tqdm(range(len(self.lst_img_paths[:2])), desc='Progress'):
             img_name = self.lst_img_paths[idx]
             try:
                 img = cv2.imread(img_name)
