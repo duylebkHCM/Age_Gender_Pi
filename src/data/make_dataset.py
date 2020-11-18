@@ -105,7 +105,7 @@ class Make_Dataset(object):
 
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
-                self.bboxes[img_name.split('/')[-1].split('.')[0]] = np.concatenate([np.array(bbox[choose_idx][:-1] / 512.0), np.array(bbox[choose_idx][-1])], axis = 0)
+                self.bboxes[img_name.split('/')[-1].split('.')[0]] = np.concatenate([np.array(bbox[choose_idx][:-1] / 512.0).ravel(), np.array(bbox[choose_idx][-1]).ravel()], axis = 0)
                 self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new[choose_idx] / 512.0
 
                 x1 = int(bbox[choose_idx][0]) - self.margin 
