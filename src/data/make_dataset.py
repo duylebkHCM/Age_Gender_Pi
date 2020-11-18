@@ -92,10 +92,10 @@ class Make_Dataset(object):
         print('[INFO] Start extract face...')
         for idx in tqdm(range(len(self.lst_img_paths)), desc='Progress'):
             img_name = self.lst_img_paths[idx]
+            print('[DEBUG] img name', img_name)
+            img = cv2.imread(img_name)
+            print('[DEBUG] img_name', img_name)
             try:
-                img = cv2.imread(img_name)
-                print('[DEBUG] img_name', img_name)
-                
                 img = cv2.resize(img, (512, 512)) #Resize all images to the same size (512, 512, 3)
                 bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
 
@@ -208,3 +208,4 @@ if __name__ == "__main__":
     aaf.extract_face()
     aaf.create_csv(opt["output_csv"])   
 
+# python anhduy/age_gender_Pi/Age_Gender_Pi/src/data/make_dataset.py --img-path 'Data/All_Age_Faces/raw/All-Age-Faces Dataset/original images' --output-img Data/All_Age_Faces/interim --output-csv Data/All_Age_Faces/processed --img-size 128 --device '0'
