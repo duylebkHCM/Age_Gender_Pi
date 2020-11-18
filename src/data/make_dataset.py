@@ -128,7 +128,7 @@ class Make_Dataset(object):
 class Make_AAF_Dataset(Make_Dataset):
     def __init__(self, label_path = '/home/Data/All_Age_Faces/raw/All-Age-Faces Dataset/image sets'):
         self.label = label_path
-        super(Make_AAF_Dataset, self).__init__()
+        super().__init__()
 
     def create_csv(self, save_path):
         img_names = os.listdir(self.cropped_dir)
@@ -136,7 +136,7 @@ class Make_AAF_Dataset(Make_Dataset):
         output_dict = {}
 
         for type in ['train', 'val']:
-            with open(os.path.join(self.label_path, type + '.txt'), 'r') as txt:
+            with open(os.path.join(self.label, type + '.txt'), 'r') as txt:
                 lines = txt.readlines()
                 for line in lines:
                     file_name = line.split(' ')[0]
@@ -204,3 +204,4 @@ if __name__ == "__main__":
 
     aaf.extract_face()
     aaf.create_csv(opt["output_csv"])   
+
