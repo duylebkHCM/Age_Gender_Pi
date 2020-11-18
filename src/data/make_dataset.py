@@ -126,9 +126,9 @@ class Make_Dataset(object):
 
 
 class Make_AAF_Dataset(Make_Dataset):
-    def __init__(self, label_path = '/home/Data/All_Age_Faces/raw/All-Age-Faces Dataset/image sets'):
+    def __init__(self, label_path = '/home/Data/All_Age_Faces/raw/All-Age-Faces Dataset/image sets', *args, **kwargs):
         self.label = label_path
-        super().__init__()
+        super(Make_AAF_Dataset, self).__init__(*args, **kwargs)
 
     def create_csv(self, save_path):
         img_names = os.listdir(self.cropped_dir)
