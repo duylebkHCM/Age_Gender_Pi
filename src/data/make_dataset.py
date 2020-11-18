@@ -105,7 +105,7 @@ class Make_Dataset(object):
 
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
-                self.bboxes[img_name.split('/')[-1].split('.')[0]] = np.concatenate([bbox[choose_idx][:-1] / 512.0, bbox[choose_idx][-1]], axis = 0)
+                self.bboxes[img_name.split('/')[-1].split('.')[0]] = np.concatenate([np.array(bbox[choose_idx][:-1] / 512.0), np.array(bbox[choose_idx][-1])], axis = 0)
                 self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new[choose_idx] / 512.0
 
                 x1 = int(bbox[choose_idx][0]) - self.margin 
@@ -168,7 +168,7 @@ class Make_AAF_Dataset(Make_Dataset):
                                 output_dict['confidence'].append(float(self.bboxes[file_name][4]))
                     except Exception as e:
                         print('Exception: ', e)
-                        
+
             df = pd.DataFrame(output_dict)
             df.to_csv(os.path.join(save_path, type + '.csv'), index=False, header=True)
             print(f'[INFO] Finish create {type}.csv')
