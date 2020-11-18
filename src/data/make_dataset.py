@@ -92,8 +92,11 @@ class Make_Dataset(object):
         print('[INFO] Start extract face...')
         for idx in tqdm(range(len(self.lst_img_paths[:2])), desc='Progress'):
             img_name = self.lst_img_paths[idx]
+            print('[DEBUG] img name', img_name)
             try:
                 img = cv2.imread(img_name)
+                print('DEBUG img shape', img.shape)
+
                 img = cv2.resize(img, (512, 512)) #Resize all images to the same size (512, 512, 3)
                 bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
 
@@ -118,6 +121,7 @@ class Make_Dataset(object):
                 print('[DEBUG] save dir', os.path.join(self.cropped_dir, img_name.split('/')[-1]))
                 cv2.imwrite(os.path.join(self.cropped_dir, img_name.split('/')[-1]), crop_img)
             except:
+                print('Cannot read image')
                 continue
     
         print('[INFO] Finish extract face...')
