@@ -116,7 +116,6 @@ class Make_Dataset(object):
                 crop_img = img[y1 : y2, x1 : x2]
                 crop_img = cv2.resize(crop_img, (self.image_size, self.image_size))
                 
-                print('[DEBUG] save dir', os.path.join(self.cropped_dir, img_name.split('/')[-1]))
                 cv2.imwrite(os.path.join(self.cropped_dir, img_name.split('/')[-1]), crop_img)
             except Exception as e:
                 print('Exception: ', e)
@@ -148,14 +147,14 @@ class Make_AAF_Dataset(Make_Dataset):
                         if file_name in img_names:
                             if 'file_name' not in output_dict.keys():
                                 output_dict['file_name'] = [file_name]
-                                output_dict['age'] = int(file_name[file_name.rfind("A") + 1 : ]) if file_name[file_name.rfind("A") + 1 : ] else -1
-                                output_dict['gender'] = int(gender)
-                                output_dict['x_min'] = float(self.bboxes[file_name][0])
-                                output_dict['y_min'] = float(self.bboxes[file_name][1])
-                                output_dict['x_max'] = float(self.bboxes[file_name][2])
-                                output_dict['y_max'] = float(self.bboxes[file_name][3])
-                                output_dict['land_mark'] = str('[') + ','.join([str(i) for i in self.landmark[file_name]]) + str(']')
-                                output_dict['confidence'] = float(self.bboxes[file_name][4])
+                                output_dict['age'] = [int(file_name[file_name.rfind("A") + 1 : ]) if file_name[file_name.rfind("A") + 1 : ] else -1]
+                                output_dict['gender'] = [int(gender)]
+                                output_dict['x_min'] = [float(self.bboxes[file_name][0])]
+                                output_dict['y_min'] = [float(self.bboxes[file_name][1])]
+                                output_dict['x_max'] = [float(self.bboxes[file_name][2])]
+                                output_dict['y_max'] = [float(self.bboxes[file_name][3])]
+                                output_dict['land_mark'] = [str('[') + ','.join([str(i) for i in self.landmark[file_name]]) + str(']')]
+                                output_dict['confidence'] = [float(self.bboxes[file_name][4])]
                             else:
                                 output_dict['file_name'].append(file_name)
                                 output_dict['age'].append(int(file_name[file_name.rfind("A") + 1 : ].split('.')[0]) if file_name[file_name.rfind("A") + 1 : ] else -1)
