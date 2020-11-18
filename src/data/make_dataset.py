@@ -126,7 +126,7 @@ class Make_Dataset(object):
 
 
 class Make_AAF_Dataset(Make_Dataset):
-    def __init__(self, label_path = '/home/Data/All_Age_Faces/raw/All-Age-Faces Dataset/image sets') -> None:
+    def __init__(self, label_path = '/home/Data/All_Age_Faces/raw/All-Age-Faces Dataset/image sets'):
         self.label = label_path
         super(Make_AAF_Dataset, self).__init__()
 
