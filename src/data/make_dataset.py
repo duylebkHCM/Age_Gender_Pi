@@ -98,13 +98,20 @@ class Make_Dataset(object):
                 print('DEBUG img shape', img.shape)
 
                 img = cv2.resize(img, (512, 512)) #Resize all images to the same size (512, 512, 3)
+
+                print('DEBUG img resize', img.shape)
+
                 bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
+
+                print('DEBUG bbox', bbox)
 
                 #Get bbox and landmark of face which has the biggest area
                 area = float((bbox[:, 2] - bbox[:, 0])*(bbox[:, 3] - bbox[:, 1]))
                 choose_idx = np.argmax(area, axis=-1)
                 choose_idx = int(choose_idx)
 
+                print('DEBUG idx', choose_idx)
+                
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
                 self.bboxes[img_name.split('/')[-1].split('.')[0]] = np.array([bbox[choose_idx][:-1] / 512.0, bbox[choose_idx][-1]], axis = 0)
@@ -123,7 +130,7 @@ class Make_Dataset(object):
             except:
                 print('Cannot read image')
                 continue
-    
+ 
         print('[INFO] Finish extract face...')
 
     def create_csv(self, save_path):
