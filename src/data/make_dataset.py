@@ -94,6 +94,8 @@ class Make_Dataset(object):
             img_name = self.lst_img_paths[idx]
             try:
                 img = cv2.imread(img_name)
+                print('[DEBUG] img_name', img_name)
+                
                 img = cv2.resize(img, (512, 512)) #Resize all images to the same size (512, 512, 3)
                 bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
 
@@ -133,12 +135,12 @@ class Make_AAF_Dataset(Make_Dataset):
     def create_csv(self, save_path):
         img_names = os.listdir(self.cropped_dir)
         
-
         for type in ['train', 'val']:
             output_dict = {}
+            print(f'[INFO] start create {type}.csv...')
             with open(os.path.join(self.label, type + '.txt'), 'r') as txt:
                 lines = txt.readlines()
-                for line in lines:
+                for line in tqdm(lines, desc='Progress'):
                     file_name = line.split(' ')[0]
                     gender = line.split(' ')[1]
                     if file_name in img_names:
@@ -165,6 +167,7 @@ class Make_AAF_Dataset(Make_Dataset):
             
             df = pd.DataFrame(output_dict)
             df.to_csv(os.path.join(save_path, type + '.csv'), index=False, header=True)
+            print(f'[INFO] Finish create {type}.csv')
 
 class Make_UTK_Dataset(Make_Dataset):
     def create_csv(self, save_path):
