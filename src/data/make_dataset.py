@@ -133,9 +133,9 @@ class Make_AAF_Dataset(Make_Dataset):
     def create_csv(self, save_path):
         img_names = os.listdir(self.cropped_dir)
         
-        output_dict = {}
 
         for type in ['train', 'val']:
+            output_dict = {}
             with open(os.path.join(self.label, type + '.txt'), 'r') as txt:
                 lines = txt.readlines()
                 for line in lines:
