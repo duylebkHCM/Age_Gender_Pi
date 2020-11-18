@@ -26,6 +26,7 @@ class Make_Dataset(object):
         self.threshold = threshold
         self.bboxes = {}
         self.landmark = {}
+        self.confidence = {}
         self.device = device
         self.output_img_dir = output_img
         self.aligned_dir = None
@@ -94,6 +95,7 @@ class Make_Dataset(object):
             img_name = self.lst_img_paths[idx]
             try:
                 img = cv2.imread(img_name)
+
                 img = cv2.resize(img, (512, 512)) #Resize all images to the same size (512, 512, 3)
 
                 bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
@@ -105,7 +107,8 @@ class Make_Dataset(object):
 
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
-                self.bboxes[img_name.split('/')[-1].split('.')[0]] = np.concatenate([np.array(bbox[choose_idx][:-1] / 512.0).ravel(), np.array(bbox[choose_idx][-1]).ravel()], axis = 0)
+                self.bboxes[img_name.split('/')[-1].split('.')[0]] = bbox[choose_idx][:-1] / 512.0
+                self.confidence[img_name.split('/')[-1].split('.')[0]] = bbox[choose_idx][-1]
                 self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new[choose_idx] / 512.0
 
                 x1 = int(bbox[choose_idx][0]) - self.margin 
@@ -154,7 +157,7 @@ class Make_AAF_Dataset(Make_Dataset):
                                 output_dict['x_max'] = [float(self.bboxes[file_name][2])]
                                 output_dict['y_max'] = [float(self.bboxes[file_name][3])]
                                 output_dict['land_mark'] = [str('[') + ','.join([str(i) for i in self.landmark[file_name]]) + str(']')]
-                                output_dict['confidence'] = [float(self.bboxes[file_name][4])]
+                                output_dict['confidence'] = [float(self.confidence[file_name])]
                             else:
                                 output_dict['file_name'].append(file_name)
                                 output_dict['age'].append(int(file_name[file_name.rfind("A") + 1 : ].split('.')[0]) if file_name[file_name.rfind("A") + 1 : ] else -1)
@@ -164,7 +167,7 @@ class Make_AAF_Dataset(Make_Dataset):
                                 output_dict['x_max'].append(float(self.bboxes[file_name][2]))
                                 output_dict['y_max'].append(float(self.bboxes[file_name][3]))
                                 output_dict['land_mark'].append(str('[') + ','.join([str(i) for i in self.landmark[file_name]]) + str(']'))
-                                output_dict['confidence'].append(float(self.bboxes[file_name][4]))
+                                output_dict['confidence'].append(float(self.confidence[file_name]))
                     except Exception as e:
                         print('Exception: ', e)
 
