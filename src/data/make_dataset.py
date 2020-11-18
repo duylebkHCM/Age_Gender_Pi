@@ -142,7 +142,7 @@ class Make_AAF_Dataset(Make_Dataset):
                     file_name = line.split(' ')[0]
                     gender = line.split(' ')[1]
                     if file_name in img_names:
-                        if 'file_name' not in output_dict:
+                        if 'file_name' not in output_dict.keys():
                             output_dict['file_name'] = [file_name]
                             output_dict['age'] = int(file_name[file_name.rfind("A") + 1 : ]) if file_name[file_name.rfind("A") + 1 : ] else -1
                             output_dict['gender'] = int(gender)
