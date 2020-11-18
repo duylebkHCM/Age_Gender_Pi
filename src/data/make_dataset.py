@@ -90,7 +90,7 @@ class Make_Dataset(object):
         model.prepare(ctx_id = int(self.device), nms=0.4)
 
         print('[INFO] Start extract face...')
-        for idx in tqdm(range(len(self.lst_img_paths[:2])), desc='Progress'):
+        for idx in tqdm(range(len(self.lst_img_paths)), desc='Progress'):
             img_name = self.lst_img_paths[idx]
             try:
                 img = cv2.imread(img_name)
@@ -158,7 +158,7 @@ class Make_AAF_Dataset(Make_Dataset):
                                 output_dict['confidence'] = float(self.bboxes[file_name][4])
                             else:
                                 output_dict['file_name'].append(file_name)
-                                output_dict['age'].append(int(file_name[file_name.rfind("A") + 1 : ]) if file_name[file_name.rfind("A") + 1 : ] else -1)
+                                output_dict['age'].append(int(file_name[file_name.rfind("A") + 1 : ].split('.')[0]) if file_name[file_name.rfind("A") + 1 : ] else -1)
                                 output_dict['gender'].append(int(gender))
                                 output_dict['x_min'].append(float(self.bboxes[file_name][0]))
                                 output_dict['y_min'].append(float(self.bboxes[file_name][1]))
