@@ -4,7 +4,7 @@
 # ````````````````````````````````````````````````````````````````````
 from ast import parse
 import os
-
+#115.78.234.111
 from numpy.core.fromnumeric import choose 
 import cv2
 from PIL import Image
@@ -106,8 +106,8 @@ class Make_Dataset(object):
 
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
-                self.bboxes[img_name.split('/')[-1].split('.')[0]] = bbox[choose_idx][:-1] / 512.0
-                self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new[choose_idx][:-1] / 512.0
+                self.bboxes[img_name.split('/')[-1].split('.')[0]] = np.array([bbox[choose_idx][:-1] / 512.0, bbox[choose_idx][-1]], axis = 0)
+                self.landmark[img_name.split('/')[-1].split('.')[0]] = landmark_new[choose_idx] / 512.0
 
                 x1 = int(bbox[choose_idx][0]) - self.margin 
                 y1 = int(bbox[choose_idx][1]) - self.margin 
@@ -128,7 +128,7 @@ class Make_Dataset(object):
 
 
 class Make_AAF_Dataset(Make_Dataset):
-    def __init__(self, type = 'train') -> None:
+    def __init__(self, type = 'train', label = 'image sets') -> None:
         self.type = type
         super(Make_AAF_Dataset, self).__init__()
 
