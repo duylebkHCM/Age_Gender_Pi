@@ -200,7 +200,7 @@ if __name__ == "__main__":
 
     opt = vars(ap.parse_args())        
 
-    aaf = Make_UTK_Dataset(img_path = opt["img_path"], device = opt["device"], output_img = opt["output_img"], is_align=opt["align"], image_size = opt["img_size"], threshold=opt['threshold'])
+    aaf = Make_AAF_Dataset(img_path = opt["img_path"], device = opt["device"], output_img = opt["output_img"], is_align=opt["align"], image_size = opt["img_size"], threshold=opt['threshold'])
 
     aaf.extract_face()
     aaf.create_csv(opt["output_csv"])   
