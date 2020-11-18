@@ -111,7 +111,7 @@ class Make_Dataset(object):
                 choose_idx = int(choose_idx)
 
                 print('DEBUG idx', choose_idx)
-                
+
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
                 self.bboxes[img_name.split('/')[-1].split('.')[0]] = np.array([bbox[choose_idx][:-1] / 512.0, bbox[choose_idx][-1]], axis = 0)
@@ -127,8 +127,9 @@ class Make_Dataset(object):
                 
                 print('[DEBUG] save dir', os.path.join(self.cropped_dir, img_name.split('/')[-1]))
                 cv2.imwrite(os.path.join(self.cropped_dir, img_name.split('/')[-1]), crop_img)
-            except:
-                print('Cannot read image')
+            except Exception as e:
+                print('Exception', e)
+                # print('Cannot read image')
                 continue
  
         print('[INFO] Finish extract face...')
