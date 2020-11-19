@@ -155,24 +155,24 @@ class Make_AAF_Dataset(Make_Dataset):
                         if file_name in img_names:
                             if 'file_name' not in output_dict.keys():
                                 output_dict['file_name'] = [file_name]
-                                output_dict['age'] = [int(file_name[file_name.rfind("A") + 1 : ].split('.')[0]) if file_name[file_name.rfind("A") + 1 : ] else -1]
+                                output_dict['age'] = [int(file_name[file_name.rfind("A") + 1 : ].split('.')[0]) if file_name[file_name.rfind("A") + 1 : ].split('.')[0]) else -1]
                                 output_dict['gender'] = [int(gender)]
-                                output_dict['x_min'] = [float(self.bboxes[file_name][0])]
-                                output_dict['y_min'] = [float(self.bboxes[file_name][1])]
-                                output_dict['x_max'] = [float(self.bboxes[file_name][2])]
-                                output_dict['y_max'] = [float(self.bboxes[file_name][3])]
-                                output_dict['land_mark'] = [str('[') + ','.join([str(i) for i in self.landmark[file_name]]) + str(']')]
-                                output_dict['confidence'] = [float(self.confidence[file_name])]
+                                output_dict['x_min'] = [float(self.bboxes[file_name.split('.')[0]][0])]
+                                output_dict['y_min'] = [float(self.bboxes[file_name.split('.')[0]][1])]
+                                output_dict['x_max'] = [float(self.bboxes[file_name.split('.')[0]][2])]
+                                output_dict['y_max'] = [float(self.bboxes[file_name.split('.')[0]][3])]
+                                output_dict['land_mark'] = [str('[') + ','.join([str(i) for i in self.landmark[file_name.split('.')[0]]]) + str(']')]
+                                output_dict['confidence'] = [float(self.confidence[file_name.split('.')[0]])]
                             else:
                                 output_dict['file_name'].append(file_name)
-                                output_dict['age'].append(int(file_name[file_name.rfind("A") + 1 : ].split('.')[0]) if file_name[file_name.rfind("A") + 1 : ] else -1)
+                                output_dict['age'].append(int(file_name[file_name.rfind("A") + 1 : ].split('.')[0]) if file_name[file_name.rfind("A") + 1 : ].split('.')[0]) else -1)
                                 output_dict['gender'].append(int(gender))
-                                output_dict['x_min'].append(float(self.bboxes[file_name][0]))
-                                output_dict['y_min'].append(float(self.bboxes[file_name][1]))
-                                output_dict['x_max'].append(float(self.bboxes[file_name][2]))
-                                output_dict['y_max'].append(float(self.bboxes[file_name][3]))
-                                output_dict['land_mark'].append(str('[') + ','.join([str(i) for i in self.landmark[file_name]]) + str(']'))
-                                output_dict['confidence'].append(float(self.confidence[file_name]))
+                                output_dict['x_min'].append(float(self.bboxes[file_name.split('.')[0]][0]))
+                                output_dict['y_min'].append(float(self.bboxes[file_name.split('.')[0]][1]))
+                                output_dict['x_max'].append(float(self.bboxes[file_name.split('.')[0]][2]))
+                                output_dict['y_max'].append(float(self.bboxes[file_name.split('.')[0]][3]))
+                                output_dict['land_mark'].append(str('[') + ','.join([str(i) for i in self.landmark[file_name.split('.')[0]]]) + str(']'))
+                                output_dict['confidence'].append(float(self.confidence[file_name.split('.')[0]]))
                     except Exception:
                         # print('Exception: ', e)
                         traceback.print_exc()
