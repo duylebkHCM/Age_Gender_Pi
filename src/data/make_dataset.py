@@ -102,7 +102,7 @@ class Make_Dataset(object):
                 bbox, landmark = model.detect(img, threshold=self.threshold, scale=1.0)
 
                 #Get bbox and landmark of face which has the biggest area
-                area = float((bbox[:, 2] - bbox[:, 0])*(bbox[:, 3] - bbox[:, 1]))
+                area = (bbox[:, 2] - bbox[:, 0])*(bbox[:, 3] - bbox[:, 1])
                 choose_idx = np.argmax(area, axis=-1).ravel()
                 choose_idx = int(choose_idx)    
 
