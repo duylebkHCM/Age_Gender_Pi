@@ -92,7 +92,7 @@ class Make_Dataset(object):
         model.prepare(ctx_id = int(self.device), nms=0.4)
 
         print('[INFO] Start extract face...')
-        for idx in tqdm(range(len(self.lst_img_paths)), desc='Progress'):
+        for idx in tqdm(range(len(self.lst_img_paths[:10])), desc='Progress'):
             img_name = self.lst_img_paths[idx]
             try:
                 img = cv2.imread(img_name)
@@ -108,7 +108,7 @@ class Make_Dataset(object):
                 
                 print('DEBUG choose idx', choose_idx)
                 print('DEBUG bbox', bbox[choose_idx])
-                
+
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
                 self.bboxes[img_name.split('/')[-1].split('.')[0]] = bbox[choose_idx][:-1] / 512.0
