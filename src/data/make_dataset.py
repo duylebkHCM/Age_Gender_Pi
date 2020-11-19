@@ -220,4 +220,4 @@ if __name__ == "__main__":
     aaf.extract_face()
     aaf.create_csv(opt["output_csv"])   
 
-python anhduy/age_gender_Pi/Age_Gender_Pi/src/data/make_dataset.py --img-path 'Data/All_Age_Faces/raw/All-Age-Faces Dataset/original images' --output-img Data/All_Age_Faces/interim --output-csv Data/All_Age_Faces/processed --img-size 128 --device '0'
+# python anhduy/age_gender_Pi/Age_Gender_Pi/src/data/make_dataset.py --img-path 'Data/All_Age_Faces/raw/All-Age-Faces Dataset/original images' --output-img Data/All_Age_Faces/interim --output-csv Data/All_Age_Faces/processed --img-size 128 --device '0'
