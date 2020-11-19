@@ -1,7 +1,7 @@
 #!/bin/bash
-rawdatadir=../../Data/AFAD_Dataset/raw/
-interdatadir=../../Data/AFAD_Dataset/interim/
-processeddir=../../Data/AFAD_Dataset/processed/
+rawdatadir=../../../Data/AFAD_Dataset/raw/
+interdatadir=../../../Data/AFAD_Dataset/interim/
+processeddir=../../../Data/AFAD_Dataset/processed/
 
 mkdir -p $rawdatadir
 mkdir -p $interdatadir
