@@ -10,7 +10,7 @@ mkdir -p $processeddir
 cd $rawdatadir
 git clone https://github.com/afad-dataset/tarball.git
 
-cd afad-dataset
+cd tarball
 bash restore.sh
 tar -xvf AFAD-Full.tar.xz
 
