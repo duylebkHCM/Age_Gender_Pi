@@ -155,7 +155,7 @@ class Make_AAF_Dataset(Make_Dataset):
                         if file_name in img_names:
                             if 'file_name' not in output_dict.keys():
                                 output_dict['file_name'] = [file_name]
-                                output_dict['age'] = [int(file_name[file_name.rfind("A") + 1 : ].split('.')[0]) if file_name[file_name.rfind("A") + 1 : ].split('.')[0]) else -1]
+                                output_dict['age'] = [int(file_name[file_name.rfind("A") + 1 : ].split('.')[0]) if file_name[file_name.rfind("A") + 1 : ].split('.')[0] else -1]
                                 output_dict['gender'] = [int(gender)]
                                 output_dict['x_min'] = [float(self.bboxes[file_name.split('.')[0]][0])]
                                 output_dict['y_min'] = [float(self.bboxes[file_name.split('.')[0]][1])]
@@ -165,7 +165,7 @@ class Make_AAF_Dataset(Make_Dataset):
                                 output_dict['confidence'] = [float(self.confidence[file_name.split('.')[0]])]
                             else:
                                 output_dict['file_name'].append(file_name)
-                                output_dict['age'].append(int(file_name[file_name.rfind("A") + 1 : ].split('.')[0]) if file_name[file_name.rfind("A") + 1 : ].split('.')[0]) else -1)
+                                output_dict['age'].append(int(file_name[file_name.rfind("A") + 1 : ].split('.')[0]) if file_name[file_name.rfind("A") + 1 : ].split('.')[0] else -1)
                                 output_dict['gender'].append(int(gender))
                                 output_dict['x_min'].append(float(self.bboxes[file_name.split('.')[0]][0]))
                                 output_dict['y_min'].append(float(self.bboxes[file_name.split('.')[0]][1]))
