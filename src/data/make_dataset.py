@@ -106,8 +106,8 @@ class Make_Dataset(object):
                 choose_idx = np.argmax(area, axis=-1).ravel()
                 choose_idx = int(choose_idx)    
                 
-                print('DEBUG choose idx', choose_idx)
-                print('DEBUG bbox', bbox[choose_idx])
+                # print('DEBUG choose idx', choose_idx)
+                # print('DEBUG bbox', bbox[choose_idx])
 
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
