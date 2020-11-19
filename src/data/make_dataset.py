@@ -16,6 +16,7 @@ import mxnet as mx
 from tqdm import tqdm
 import argparse
 from mlxtend.image import EyepadAlign
+import traceback
 
 class Make_Dataset(object):
     def __init__(self, img_path, output_img, image_size, device, is_align = False, margin = 0, threshold = 0.5):
@@ -102,8 +103,8 @@ class Make_Dataset(object):
 
                 #Get bbox and landmark of face which has the biggest area
                 area = float((bbox[:, 2] - bbox[:, 0])*(bbox[:, 3] - bbox[:, 1]))
-                choose_idx = np.argmax(area, axis=-1)
-                choose_idx = int(choose_idx)
+                choose_idx = np.argmax(area, axis=-1).ravel()
+                choose_idx = int(choose_idx)    
 
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
@@ -120,8 +121,9 @@ class Make_Dataset(object):
                 crop_img = cv2.resize(crop_img, (self.image_size, self.image_size))
                 
                 cv2.imwrite(os.path.join(self.cropped_dir, img_name.split('/')[-1]), crop_img)
-            except Exception as e:
-                print('Exception: ', e)
+            except Exception:
+                traceback.print_exc()
+                # print('Exception: ', e)
                 continue
  
         print('[INFO] Finish extract face...')
@@ -168,8 +170,9 @@ class Make_AAF_Dataset(Make_Dataset):
                                 output_dict['y_max'].append(float(self.bboxes[file_name][3]))
                                 output_dict['land_mark'].append(str('[') + ','.join([str(i) for i in self.landmark[file_name]]) + str(']'))
                                 output_dict['confidence'].append(float(self.confidence[file_name]))
-                    except Exception as e:
-                        print('Exception: ', e)
+                    except Exception:
+                        # print('Exception: ', e)
+                        traceback.print_exc()
 
             df = pd.DataFrame(output_dict)
             df.to_csv(os.path.join(save_path, type + '.csv'), index=False, header=True)
