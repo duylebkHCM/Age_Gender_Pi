@@ -105,7 +105,10 @@ class Make_Dataset(object):
                 area = (bbox[:, 2] - bbox[:, 0])*(bbox[:, 3] - bbox[:, 1])
                 choose_idx = np.argmax(area, axis=-1).ravel()
                 choose_idx = int(choose_idx)    
-
+                
+                print('DEBUG choose idx', choose_idx)
+                print('DEBUG bbox', bbox[choose_idx])
+                
                 landmark_new = np.reshape(landmark, (-1, 10), order='F')
                 landmark_new = landmark_new.astype('int')
                 self.bboxes[img_name.split('/')[-1].split('.')[0]] = bbox[choose_idx][:-1] / 512.0
@@ -217,4 +220,4 @@ if __name__ == "__main__":
     aaf.extract_face()
     aaf.create_csv(opt["output_csv"])   
 
-# python anhduy/age_gender_Pi/Age_Gender_Pi/src/data/make_dataset.py --img-path 'Data/All_Age_Faces/raw/All-Age-Faces Dataset/original images' --output-img Data/All_Age_Faces/interim --output-csv Data/All_Age_Faces/processed --img-size 128 --device '0'
+python anhduy/age_gender_Pi/Age_Gender_Pi/src/data/make_dataset.py --img-path 'Data/All_Age_Faces/raw/All-Age-Faces Dataset/original images' --output-img Data/All_Age_Faces/interim --output-csv Data/All_Age_Faces/processed --img-size 128 --device '0'
