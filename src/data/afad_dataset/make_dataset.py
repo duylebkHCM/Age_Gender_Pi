@@ -67,7 +67,7 @@ def create_dataset(path):
                 output_dict['gender'].append(gender)
                 output_dict['file_name'].append(file_name)
 
-            cv2.imwrite(img, os.path.join(OUTPUT_DIR, file_name))
+            cv2.imwrite(os.path.join(OUTPUT_DIR, file_name), img)
             count += 1
     
     df = pd.DataFrame(output_dict)
