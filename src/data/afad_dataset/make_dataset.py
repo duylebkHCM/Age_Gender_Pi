@@ -33,6 +33,8 @@ def analysis(path):
 
 def create_dataset(path):
     new_h, new_w = analysis(path)
+
+    print(f'[INFO] Resize w, h are: {new_w}, {new_h}')
     
     output_dict = {}
 
