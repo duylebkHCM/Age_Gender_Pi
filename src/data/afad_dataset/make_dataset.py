@@ -66,7 +66,7 @@ def create_dataset(path):
             else:
                 output_dict['age'].append(age)
                 output_dict['gender'].append(gender)
-                output_dict['file_name'].apppend(file_name)
+                output_dict['file_name'].append(file_name)
 
             shutil.copyfile(image_path, os.path.join(OUTPUT_DIR, file_name))
             count += 1
