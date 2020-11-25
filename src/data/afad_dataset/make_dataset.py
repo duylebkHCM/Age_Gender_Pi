@@ -8,7 +8,6 @@ import shutil
 
 
 BASE_DIR = '/home/Data/AFAD_Dataset/raw/tarball/AFAD-Full'
-
 OUTPUT_DIR = '/home/Data/AFAD_Dataset/interim/'
 OUTPUT_CSV = '/home/Data/AFAD_Dataset/processed/'
 
@@ -68,7 +67,7 @@ def create_dataset(path):
                 output_dict['gender'].append(gender)
                 output_dict['file_name'].append(file_name)
 
-            shutil.copyfile(image_path, os.path.join(OUTPUT_DIR, file_name))
+            cv2.imwrite(img, os.path.join(OUTPUT_DIR, file_name))
             count += 1
     
     df = pd.DataFrame(output_dict)
