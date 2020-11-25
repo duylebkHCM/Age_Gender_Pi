@@ -77,3 +77,6 @@ def create_dataset(path):
 
     print('[INFO] Finish')
     print('[INFO] Total of success processed image : ', count)
+
+if __name__ == '__main__':
+    create_dataset(BASE_DIR)
